@@ -5,19 +5,40 @@ if __name__ == "__main__":
     c = Core()
     c.read_file(fp)
     c.init_state()
+    c.deadlock_detection()
 
-    c.deadlock_detection()
     c.step_forward()
     c.deadlock_detection()
+
     c.step_forward()
     c.deadlock_detection()
+
     c.step_forward()
     c.deadlock_detection()
+
     c.step_forward()
     c.deadlock_detection()
+
     c.step_forward()
     c.deadlock_detection()
+
     c.step_forward()
     c.deadlock_detection()
+
+    c.step_forward()
+    c.deadlock_detection()
+
+    c.step_forward()
+    c.deadlock_detection()
+
+    c.step_forward()
+    c.deadlock_detection()
+
+    c.step_forward()
+    c.deadlock_detection()
+
+    c.step_forward()
+    c.deadlock_detection()
+
     c.step_forward()
     c.deadlock_detection()
