@@ -1,4 +1,9 @@
 class Vertex(object):
+    """
+    Vertex object with key and value pairs.
+    Modified from:
+    https://www.sanfoundry.com/python-program-find-directed-graph-contains-cycle-using-dfs/
+    """
     def __init__(self, key):
         self.key = key
         self.points_to = {}

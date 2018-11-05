@@ -2,7 +2,15 @@ from program3.vertex import Vertex
 
 
 class Graph(object):
+    """
+    Directed Graph for use as Wait-for Graph.
+    Modified from:
+    https://www.sanfoundry.com/python-program-find-directed-graph-contains-cycle-using-dfs/
+    """
     def __init__(self):
+        """
+        Initialize vertex dict.
+        """
         self.vertices = {}
 
     def add_vertex(self, key):
