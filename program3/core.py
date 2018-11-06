@@ -1,5 +1,5 @@
 import numpy as np
-from program3.graph import Graph
+from program3.wait_for_graph.graph import Graph
 
 
 class Core(object):
@@ -58,9 +58,9 @@ class Core(object):
             f = open(fp, 'r')
             file_arr = f.read().splitlines()
             #  Get number of processes.
-            self.processes = int(file_arr.pop(0)[0])
+            self.processes = int(file_arr.pop(0).split(' ')[0])
             #  Get number of resources.
-            self.resources = int(file_arr.pop(0)[0])
+            self.resources = int(file_arr.pop(0).split(' ')[0])
             print("\n%d processes and %d resources." % (self.processes, self.resources))
             #  Load each step.
             for line in file_arr:

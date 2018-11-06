@@ -1,43 +1,8 @@
 from program3.core import Core
+from program3.simwindow import SimWindow
+
 
 if __name__ == "__main__":
-    fp = input("Give the file path: ")
     c = Core()
-    c.read_file(fp)
-    c.init_state()
-
-    c.step_forward()
-    c.deadlock_detection()
-
-    c.step_forward()
-    c.deadlock_detection()
-
-    c.step_forward()
-    c.deadlock_detection()
-
-    c.step_forward()
-    c.deadlock_detection()
-
-    c.step_forward()
-    c.deadlock_detection()
-
-    c.step_forward()
-    c.deadlock_detection()
-
-    c.step_forward()
-    c.deadlock_detection()
-
-    c.step_forward()
-    c.deadlock_detection()
-
-    c.step_forward()
-    c.deadlock_detection()
-
-    c.step_forward()
-    c.deadlock_detection()
-
-    c.step_forward()
-    c.deadlock_detection()
-
-    c.step_forward()
-    c.deadlock_detection()
+    w = SimWindow(c)
+    w.loop()
