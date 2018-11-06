@@ -1,9 +1,9 @@
-from program3.vertex import Vertex
+from program3.wait_for_graph.vertex import Vertex
 
 
 class Graph(object):
     """
-    Directed Graph for use as Wait-for Graph.
+    Directed wait_for_graph for use as Wait-for wait_for_graph.
     Modified from:
     https://www.sanfoundry.com/python-program-find-directed-graph-contains-cycle-using-dfs/
     """

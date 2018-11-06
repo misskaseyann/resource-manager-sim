@@ -1,5 +1,5 @@
 import numpy as np
-from program3.graph import Graph
+from program3.wait_for_graph.graph import Graph
 
 
 class Core(object):
@@ -24,6 +24,30 @@ class Core(object):
         #  Wait-for graph that we perform DFS for detecting deadlock cycles.
         self.graph = Graph()
 
+    def get_processes(self):
+        return self.processes
+
+    def get_resources(self):
+        return self.resources
+
+    def get_steps(self):
+        return self.steps
+
+    def get_available(self):
+        return self.available
+
+    def get_hold_edges(self):
+        return self.hold_edges
+
+    def get_request_edges(self):
+        return self.request_edges
+
+    def get_state_num(self):
+        return self.state_num
+
+    def get_graph(self):
+        return self.graph
+
     def read_file(self, fp):
         """
         Read in file, set number of processes, number of resources,
@@ -34,9 +58,9 @@ class Core(object):
             f = open(fp, 'r')
             file_arr = f.read().splitlines()
             #  Get number of processes.
-            self.processes = int(file_arr.pop(0)[0])
+            self.processes = int(file_arr.pop(0).split(' ')[0])
             #  Get number of resources.
-            self.resources = int(file_arr.pop(0)[0])
+            self.resources = int(file_arr.pop(0).split(' ')[0])
             print("\n%d processes and %d resources." % (self.processes, self.resources))
             #  Load each step.
             for line in file_arr:
