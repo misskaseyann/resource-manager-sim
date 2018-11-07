@@ -23,6 +23,8 @@ class Core(object):
         self.state_num = 0
         #  Wait-for graph that we perform DFS for detecting deadlock cycles.
         self.graph = Graph()
+        self.connected_v = []
+        self.state_string = [" "] * 2
 
     def get_processes(self):
         return self.processes
@@ -36,6 +38,9 @@ class Core(object):
     def get_available(self):
         return self.available
 
+    def get_connected_v(self):
+        return self.connected_v
+
     def get_hold_edges(self):
         return self.hold_edges
 
@@ -47,6 +52,9 @@ class Core(object):
 
     def get_graph(self):
         return self.graph
+
+    def get_state_string(self):
+        return self.state_string
 
     def read_file(self, fp):
         """
@@ -77,6 +85,8 @@ class Core(object):
                 #  Store as tuple in our steps.
                 self.steps.append((p, re, r))
             print("%d total steps in simulation.\n" % len(self.steps))
+            self.state_string[0] = str(self.processes) + " processes and " + str(self.resources) + " resources. "
+            self.state_string[1] = str(len(self.steps)) + " total steps in simulation."
         except IOError:
             print("Cannot find the file at", fp)
 
@@ -103,10 +113,13 @@ class Core(object):
         for node in self.graph:
             if node not in visited:
                 if self.deadlock_detection_recur(node, visited, recStack):
+                    deadlocked_processes = []
+                    for item in recStack:
+                        deadlocked_processes.append(item.get_key())
                     print("Deadlock!")
-                    return True
+                    return (True, deadlocked_processes)
         print("No deadlock!")
-        return False
+        return (False, None)
 
     def deadlock_detection_recur(self, v, visited, recStack):
         """
@@ -135,12 +148,14 @@ class Core(object):
         # TODO: Add check if there are no more states to move forward
         # TODO: Add step_backward
         print("\nStepping forward to state %d." % int(self.state_num + 1))
+        self.state_string[0] = "Stepping forward to state " + str(self.state_num + 1) + "."
         #  Get process and resource involved.
         process = self.steps[self.state_num][0]
         resource = self.steps[self.state_num][2]
         #  Is this a request?
         if self.steps[self.state_num][1]:
             print("Process %d requests resource %d." % (process, resource))
+            self.state_string[1] = "Process " + str(process) + " requests resource " + str(resource) + "."
             #  Is the resource not being used by a process?
             if self.available[resource] > 0:
                 #  Mark in hold matrix the relationship between resource and process.
@@ -162,6 +177,7 @@ class Core(object):
                 print("p{:d} --> p{:d}".format(process, self.connected_v[resource])) #  Protect against None type.
         else:
             print("Process %d releases resource %d." % (process, resource))
+            self.state_string[0] = "Process " + str(process) + " releases resource " + str(resource) + "."
             #  Remove connection in hold matrix.
             self.hold_edges[resource][process] -= 1
             #  Does another process want this resource?
@@ -178,11 +194,72 @@ class Core(object):
                 if self.graph.does_edge_exist(new_process, self.connected_v[resource]):
                     self.graph.delete_edge(new_process, self.connected_v[resource])
                 print("Process %d now has resource %d." % (new_process, resource))
+                self.state_string[1] = "Process " + str(new_process) + " now has resource " + str(resource) + "."
             else:
                 print("Resource %d is now available." % resource)
+                self.state_string[1] = "Resource " + str(resource) + " is now available."
                 #  Mark resource as unowned by a process.
                 self.available[resource] += 1
                 #  Empty process that owned the resource previously.
                 self.connected_v[resource] = None
         #  Advance the state.
         self.state_num += 1
+
+    def step_backward(self):
+        #self.state_num -= 1
+        print("\nStepping backward to state %d." % int(self.state_num))
+        self.state_string[0] = "Stepping backward to state " + str(self.state_num) + "."
+        #  Get process and resource involved.
+        process = self.steps[self.state_num - 1][0]
+        resource = self.steps[self.state_num - 1][2]
+        #  Is this a request?
+        if self.steps[self.state_num - 1][1]:
+            print("Process %d requests resource %d." % (process, resource))
+            self.state_string[1] = "Process " + str(process) + " requests resource " + str(resource) + "."
+            #  Was the resource assigned to a process?
+            if self.connected_v[resource] == process:
+                #  Mark in hold matrix the relationship between resource and process.
+                self.hold_edges[resource][process] -= 1
+                #  Make resource unavailabe.
+                self.available[resource] += 1
+                #  Store the process ID that holds the resource.
+                self.connected_v[resource] = None
+            else:
+                #  Mark in request matrix the relationship between resource and process.
+                self.request_edges[resource][process] -= 1
+                #  Add our process to the graph and make a directed edge.
+                if process in self.graph:
+                    self.graph.delete_vertex(process)
+                if self.connected_v[resource] in self.graph:
+                    self.graph.delete_vertex(self.connected_v[resource])
+                if self.graph.does_edge_exist(process, self.connected_v[resource]):
+                    self.graph.delete_edge(process, self.connected_v[resource])
+                print("p{:d} --> p{:d}".format(process, self.connected_v[resource])) #  Protect against None type.
+        else:
+            print("Process %d releases resource %d." % (process, resource))
+            self.state_string[0] = "Process " + str(process) + " releases resource " + str(resource) + "."
+            #  Remove connection in hold matrix.
+            self.hold_edges[resource][process] += 1
+            #  Does another process want this resource?
+            if np.count_nonzero(self.request_edges[resource]) == 0:
+                #  Get next process that wants the resource.
+                #new_process = self.request_edges[resource].index(1)
+                #  Mark in hold matrix the relationship between resource and process.
+                self.hold_edges[resource][process] -= 1
+                #  Store the process ID that holds the resource.
+                self.connected_v[resource] = None
+                #  Remove connection in request matrix.
+                self.request_edges[resource][process] += 1
+                #  Delete edge if it exists.
+                if not self.graph.does_edge_exist(process, self.connected_v[resource]):
+                    self.graph.delete_edge(process, self.connected_v[resource])
+                print("Process %d now has resource %d." % (process, resource))
+                self.state_string[1] = "Process " + str(process) + " now has resource " + str(resource) + "."
+            else:
+                print("Resource %d is now available." % resource)
+                self.state_string[1] = "Resource " + str(resource) + " is now available."
+                #  Mark resource as unowned by a process.
+                self.available[resource] -= 1
+                #  Empty process that owned the resource previously.
+                self.connected_v[resource] = process
+        self.state_num -= 1
