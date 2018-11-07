@@ -17,6 +17,9 @@ class Graph(object):
         vertex = Vertex(key)
         self.vertices[key] = vertex
 
+    def delete_vertex(self, key):
+        self.vertices.pop(key, None)
+
     def get_vertex(self, key):
         return self.vertices[key]
 
@@ -30,7 +33,11 @@ class Graph(object):
         self.vertices[src_key].delete_neighbor(self.vertices[dest_key])
 
     def does_edge_exist(self, src_key, dest_key):
-        return self.vertices[src_key].does_it_point_to(self.vertices[dest_key])
+        try:
+            return self.vertices[src_key].does_it_point_to(self.vertices[dest_key])
+        except Exception:
+            return False
+
 
     def __iter__(self):
         return iter(self.vertices.values())
