@@ -2,7 +2,10 @@ import pygame as pg
 
 
 class Button(object):
-    """A fairly straight forward button class."""
+    """
+    A fairly straight forward button class.
+    Taken from: https://github.com/Mekire/pygame-button
+    """
     def __init__(self,rect,color,function,**kwargs):
         self.rect = pg.Rect(rect)
         self.color = color
