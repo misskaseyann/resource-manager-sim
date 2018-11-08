@@ -1,16 +1,13 @@
-from program3.wait_for_graph.vertex import Vertex
+from program3.helpers.vertex import Vertex
 
 
 class Graph(object):
     """
-    Directed wait_for_graph for use as Wait-for wait_for_graph.
+    Directed helpers for use as Wait-for helpers.
     Modified from:
     https://www.sanfoundry.com/python-program-find-directed-graph-contains-cycle-using-dfs/
     """
     def __init__(self):
-        """
-        Initialize vertex dict.
-        """
         self.vertices = {}
 
     def add_vertex(self, key):
@@ -33,11 +30,10 @@ class Graph(object):
         self.vertices[src_key].delete_neighbor(self.vertices[dest_key])
 
     def does_edge_exist(self, src_key, dest_key):
-        try:
-            return self.vertices[src_key].does_it_point_to(self.vertices[dest_key])
-        except Exception:
-            return False
+        return self.vertices[src_key].does_it_point_to(self.vertices[dest_key])
 
+    def does_vertex_exit(self, key):
+        return self.vertices[key]
 
     def __iter__(self):
         return iter(self.vertices.values())
